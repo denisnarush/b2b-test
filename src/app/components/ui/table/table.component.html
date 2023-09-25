@@ -1,0 +1,64 @@
+<div class="table-container">
+  <table class="table is-fullwidth is-striped">
+    <thead>
+      <tr>
+        <th scope="col" *ngFor="let column of config?.columns" [style]="{ width: column.width }">{{ column.alias }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="data === null; then nodata"></ng-container>
+      <ng-container *ngIf="data?.length !== 0; else emptyData">
+        <ng-container
+        *ngFor="let item of data;  trackBy: identify"
+        [ngTemplateOutlet]="row"
+        [ngTemplateOutletContext]="{
+          $implicit: item
+        }"
+      >
+      </ng-container>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #empty let-item>&mdash;</ng-template>
+
+<ng-template #nodata>
+  <tr>
+    <td [colSpan]="config.columns.length">
+      <div class="card" data-e2e="no-data">
+        <div class="card-content">No data to display or it is loaded</div>
+      </div>
+    </td>
+  </tr>
+</ng-template>
+
+<ng-template #emptyData>
+  <tr>
+    <td [colSpan]="config.columns.length">
+      <div class="card" data-e2e="empty-data">
+        <div class="card-content">No data to display</div>
+      </div>
+    </td>
+  </tr>
+</ng-template>
+
+
+<ng-template #row let-item>
+  <tr data-e2e="data-row">
+    <td *ngFor="let column of config.columns">
+      <!-- output: regular -->
+      <ng-container *ngIf="!templates[column.alias]">
+        <ng-container *ngIf="item | getValueByPath : column.alias as value; else empty">{{
+          value
+        }}</ng-container>
+      </ng-container>
+      <!-- output: template -->
+      <ng-container
+        *ngIf="templates[column.alias]"
+        [ngTemplateOutlet]="templates[column.alias]"
+        [ngTemplateOutletContext]="{ $implicit: item, empty: empty }"
+      ></ng-container>
+    </td>
+  </tr>
+</ng-template>

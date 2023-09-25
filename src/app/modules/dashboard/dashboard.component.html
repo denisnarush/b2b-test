@@ -1,0 +1,46 @@
+<ng-container
+  *ngIf="{
+    data: dataEntries$ | async,
+    formChanges: fromChanges$ | async
+  } as vm"
+>
+  <form [formGroup]="form">
+    <div class="field is-horizontal">
+      <div class="field-body">
+        <div class="field">
+          <label class="label" for="delay">Delay</label>
+          <div class="control">
+            <input  [ngClass]="{'is-danger': !delay?.valid}" class="input" type="number" name="delay" id="delay" [formControlName]="'delay'" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="size">Array size</label>
+          <div class="control">
+            <input [ngClass]="{'is-danger': !size?.valid}" class="input" type="number" name="size" id="size" [formControlName]="'size'" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="additional">Additional array ids</label>
+          <div class="control">
+            <input class="input" type="text" name="additional" id="additional" [formControlName]="'additional'" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <app-table
+    [data]="vm.data"
+    [config]="config"
+    [templates]="{ child: child, color: color }"
+  ></app-table>
+
+  <ng-template #child let-item>
+    <app-table class="box" [data]="[item]" [config]="nested" [templates]="{color: color}"></app-table>
+  </ng-template>
+
+  <ng-template #color let-item>
+    <p [style.backgroundColor]="item.color">{{item.color}}</p>
+  </ng-template>
+
+</ng-container>
